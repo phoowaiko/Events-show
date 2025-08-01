@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect, useState } from "react";
 
 interface UrlParams {
@@ -57,7 +56,9 @@ export function useUrlParams(): UseUrlParamsReturn {
         }
       });
 
-      const newUrl = `${window.location.pathname}${urlParams.toString() ? `?${urlParams.toString()}` : ""}`;
+      const newUrl = `${window.location.pathname}${
+        urlParams.toString() ? `?${urlParams.toString()}` : ""
+      }`;
       window.history.pushState({}, "", newUrl);
     }
   }, []);
@@ -70,7 +71,11 @@ export function useUrlParams(): UseUrlParamsReturn {
       if (value === null || value === undefined || value === "") {
         delete newParams[key];
       } else {
-        newParams[key] = value as any;
+        if (key === "page" || key === "size") {
+          newParams[key] = Number(value); // Convert string input to number
+        } else {
+          newParams[key] = value as string; // Only string fields (search, eventType, etc.)
+        }
       }
 
       // Reset to page 1 when filters change (except when updating page/size)
@@ -81,7 +86,7 @@ export function useUrlParams(): UseUrlParamsReturn {
       setParams(newParams);
       updateURL(newParams);
     },
-    [params, updateURL],
+    [params, updateURL]
   );
 
   // Update multiple parameters
@@ -100,24 +105,25 @@ export function useUrlParams(): UseUrlParamsReturn {
       setParams(updatedParams);
       updateURL(updatedParams);
     },
-    [params, updateURL],
+    [params, updateURL]
   );
 
   // Clear parameters (optionally keep some)
   const clearParams = useCallback(
     (keysToKeep: (keyof UrlParams)[] = []) => {
-      const clearedParams: UrlParams = {};
+      const entries = keysToKeep
+        .map((key) => {
+          const value = params[key];
+          return value !== undefined ? [key, value] : null;
+        })
+        .filter((entry): entry is [string, string | number] => entry !== null);
 
-      keysToKeep.forEach((key) => {
-        if (params[key] !== undefined) {
-          clearedParams[key] = params[key] as any;
-        }
-      });
+      const clearedParams = Object.fromEntries(entries) as UrlParams;
 
       setParams(clearedParams);
       updateURL(clearedParams);
     },
-    [params, updateURL],
+    [params, updateURL]
   );
 
   // Listen for browser back/forward navigation
