@@ -71,11 +71,7 @@ export function useUrlParams(): UseUrlParamsReturn {
       if (value === null || value === undefined || value === "") {
         delete newParams[key];
       } else {
-        if (key === "page" || key === "size") {
-          newParams[key] = Number(value); // Convert string input to number
-        } else {
-          newParams[key] = value as string; // Only string fields (search, eventType, etc.)
-        }
+        newParams[key] = value as any;
       }
 
       // Reset to page 1 when filters change (except when updating page/size)
@@ -111,14 +107,13 @@ export function useUrlParams(): UseUrlParamsReturn {
   // Clear parameters (optionally keep some)
   const clearParams = useCallback(
     (keysToKeep: (keyof UrlParams)[] = []) => {
-      const entries = keysToKeep
-        .map((key) => {
-          const value = params[key];
-          return value !== undefined ? [key, value] : null;
-        })
-        .filter((entry): entry is [string, string | number] => entry !== null);
+      const clearedParams: UrlParams = {};
 
-      const clearedParams = Object.fromEntries(entries) as UrlParams;
+      keysToKeep.forEach((key) => {
+        if (params[key] !== undefined) {
+          clearedParams[key] = params[key] as any;
+        }
+      });
 
       setParams(clearedParams);
       updateURL(clearedParams);

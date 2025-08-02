@@ -1,8 +1,4 @@
 import { config } from "@/lib/config";
-interface Classification {
-  segment?: { name: string };
-  type?: { name: string };
-}
 
 // Ticketmaster API configuration
 const TICKETMASTER_API_KEY = config.apiKey;
@@ -133,7 +129,8 @@ export async function fetchEventClassifications(): Promise<string[]> {
     const classifications = data._embedded?.classifications || [];
     // Extract unique genre names
     const genres = new Set<string>();
-    classifications.forEach((classification: Classification) => {
+
+    classifications.forEach((classification: any) => {
       if (classification?.segment?.name) {
         genres.add(classification?.segment?.name);
       } else if (classification?.type?.name) {

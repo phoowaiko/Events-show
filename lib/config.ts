@@ -3,5 +3,5 @@ type TConfig = {
 };
 
 export const config: TConfig = {
-  apiKey: process.env.TICKETMASTER_API_KEY!,
+  apiKey: process.env.NEXT_PUBLIC_TICKETMASTER_API_KEY!,
 };
