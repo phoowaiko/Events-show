@@ -42,10 +42,6 @@ const EventsContainer = () => {
     clearFilters,
   } = useEvents();
 
-  const handleEventClick = (event: TEvent) => {
-    setSelectedEvent(event);
-  };
-
   const handleCloseModal = () => {
     setSelectedEvent(null);
   };
@@ -103,11 +99,7 @@ const EventsContainer = () => {
         <>
           <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {events.map((event) => (
-              <EventCard
-                key={event.id}
-                event={event}
-                onClick={() => handleEventClick(event)}
-              />
+              <EventCard key={event.id} event={event} />
             ))}
           </div>
 

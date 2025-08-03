@@ -145,3 +145,31 @@ export async function fetchEventClassifications(): Promise<string[]> {
     return ["Music", "Sports", "Arts & Theatre", "Film", "Miscellaneous"];
   }
 }
+export async function fetchEvent(id: string): Promise<TEvent> {
+  try {
+    const response = await fetch(
+      `${TICKETMASTER_BASE_URL}/events/${id}?apikey=${TICKETMASTER_API_KEY}`
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Ticketmaster API error: ${response.status} ${response.statusText}`
+      );
+    }
+
+    const data: TicketmasterEvent = await response.json();
+
+    const event = normalizeTicketmasterEvent(data);
+    return event;
+
+    //   data._embedded?.events?.map(normalizeTicketmasterEvent) || [];
+    // // return {
+    //   events,
+    //   totalPages: data.page.totalPages,
+    //   totalElements: data.page.totalElements,
+    // };
+  } catch (error) {
+    console.error("Error fetching events from Ticketmaster:", error);
+    throw error;
+  }
+}
